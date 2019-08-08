@@ -31,6 +31,15 @@ router.get('/logout', function (req, res, next) {
      });
 });
 
+// 마이페이지 라우터
+router.get('/mypage', function (req, res, next) {
+  res.render('mypage', Object.assign(req.user, {
+      register: null, 
+      logged: true,
+      login: null
+    })); 
+});
+
 
 // 개인 회원가입 라우터
 router.get('/register_personal', function (req, res, next) {
