@@ -67,23 +67,28 @@
                     switch (locals.class) {
                         case '브론즈':
                             var margin = 50;
-                            var rest = margin - locals.bdcard_count;
+                            var rest = margin - locals.dona_count;
+                            var per =  locals.dona_count / margin * 100;
                             break;
                         case '실버':
                             var margin = 100;
-                            var rest = margin - locals.bdcard_count;
+                            var rest = margin - locals.dona_count;
+                            var per =  locals.dona_count / margin * 100;
                             break;
                         case '골드':
                             var margin = 150;
-                            var rest = margin - locals.bdcard_count;
+                            var rest = margin - locals.dona_count;
+                            var per =  locals.dona_count / margin * 100;
                             break;
                         case '플레티넘':
                             var margin = 200;
-                            var rest = margin - locals.bdcard_count;
+                            var rest = margin - locals.dona_count;
+                            var per =  locals.dona_count / margin * 100;
                             break;
                         case '다이아':
                             var margin = 300;
-                            var rest = margin - locals.bdcard_count;
+                            var rest = margin - locals.dona_count;
+                            var per =  locals.dona_count / margin * 100;
                             break;
                     }
 
@@ -91,14 +96,17 @@
 
                 <ul class="navbar-nav p-3">
                     <li class="nav-item p-1">
-                        기부한 헌혈증 개수: <%=locals.bdcard_count%>개
+                        등록한 헌혈증 개수: <%=locals.bdcard_count%>개
                     </li>
                     <li class="nav-item p-1">
-                        등급: <%=locals.class%><span class="sr-only">(current)</span>
+                        기부한 헌혈증 개수: <%=locals.dona_count%>개
+                    </li>
+                    <li class="nav-item p-1">
+                        등급: <%=locals.class%>
                     </li>
                     <li class="nav-item p-1">
                         <div class="progress">
-                            <div class="progress-bar bg-warning" style="width: <%=margin%>%;"></div>
+                            <div class="progress-bar bg-warning" style="width: <%=per%>%;"></div>
                         </div>
                     </li>
                     <li class="nav-item p-1">
@@ -137,15 +145,58 @@
 
 
             <div class="modal-footer">
-                <button id="require" type="button" class="btn btn-primary">내 기부요청 관리</button>
-                <button id="modify" type="button" class="btn btn-primary" data-dismiss="modal">정보수정</button>
+                <a class="btn btn-success" href="/blood/my_blood_request" role="button">내 기부요청 관리</a>
+                <button id="modify" type="button" class="btn btn-success" data-dismiss="modal">정보수정</button>
                 <button id="withdraw" type="button" class="btn btn-danger" data-dismiss="modal">회원탈퇴</button>
             </div>
         </div>
     </main>
 
-<script>
-</script>
+<!--script>
+    $('.donation').click(function () {
+        if ("<%=locals.user_id%>" == $(this).attr('data-req_user_id')) {
+            $('#donationModal').modal('dispose')
+            alert('asdf')
+
+            $.ajax({
+                url: '/users/my_blood_request',
+                dataType: 'json',
+                type: 'POST',
+                data: { 
+                    id: id,
+                    req_user_id: req_user_id,
+                    nickname: nickname,
+                    donate_count: Number($('#donate_count').val()),
+                    need_count: need_count,
+                    donated_count: donated_count,
+                    used_place: used_place,
+                    bdcard_count: bdcard_count
+                },
+                success: function (data) {
+                    alert(donate_count + '개의 헌혈증이 기부되었습니다. 감사합니다!');
+                    
+                    $('#donationModal').find('#donated_count').text(data.donated_count).css('color', 'red');
+                        $('#donationModal').find('#need_more').text(data.need_more).css('color', 'red');
+                    $('#bcount' + id).text(data.donated_count + '/' + need_count);
+                    
+                    $('#' + id).attr('data-need_count', data.need_count);
+                    $('#' + id).attr('data-donated_count', data.donated_count);
+                    $('#' + id).attr('data-bdcard_count', data.bdcard_count);
+
+                    if (data.is_finished) {
+                        alert('해당 기부요청글의 기부가 완료되었습니다!');
+                       
+                    }
+                    $('#donationClose').trigger("click");
+                    $('#donationClose').bind("click");
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+    });
+</script-->
 
   
     
