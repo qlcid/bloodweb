@@ -40,7 +40,6 @@ router.get('/mypage', function (req, res, next) {
     })); 
 });
 
-
 // 개인 회원가입 라우터
 router.get('/register_personal', function (req, res, next) {
   res.render('register_personal_form', {
