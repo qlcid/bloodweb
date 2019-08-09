@@ -15,6 +15,13 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="/bootstrap/jquery-slim.min.js"><\/script>')</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"
+        integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o"
+        crossorigin="anonymous"></script>
+
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;
@@ -35,35 +42,26 @@
 </head>
 
 <body>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-        crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('<script src="/bootstrap/jquery-slim.min.js"><\/script>')</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"
-        integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o"
-        crossorigin="anonymous"></script>
-
+    
     <%if(register == "success"){%>
     <script>
         alert('기부요청 게시물을 등록하였습니다!');
         location.href = '/blood/blood_donation_main';
     </script>
     <%}%>   
-    
-    <%if(!locals.user_id){%>
-    <script>
-        $(function () {
-            $("#blood_req, .donation")
-                .removeAttr()
-                .click(function () { alert('회원만 이용할 수 있습니다. 회원가입을 해주세요!') });
-        });
-    </script>
-    <%}%>    
 
 
     <%if(locals.user_id){%>
-    <%- include('header_login.ejs')%>
+    <%- include('header_login.ejs')%> 
     <%}else{%>
     <%- include('header_logout.ejs')%>
+        <script>
+            $(function () {
+                $("#blood_req, .donation button")
+                    .removeAttr('data-toggle').removeAttr('href')
+                    .click(function () { alert('회원만 이용할 수 있습니다. 회원가입을 해주세요!') });
+            });
+        </script>
     <%}%>
     <p></p>
     <p>a</p>
@@ -93,18 +91,24 @@
                         <td>재단</td>
                         <%}%>    
                         <td id="bcount<%=rb.id%>"><%=rb.donated_count%>/<%=rb.need_count%></td>
+                        <%if(locals.user_id != rb.req_user_id){%>
                         <td class="donation">
                             <button id="<%=rb.id%>" type="button" class="btn-success btn-sm" data-toggle="modal" data-target="#donationModal" data-focus="true"
                                 data-req_user_id="<%=rb.req_user_id%>" data-nickname="<%=rb.user.nickname%>"
                                 data-need_count="<%=rb.need_count%>" data-donated_count="<%=rb.donated_count%>"
-                                data-used_place="<%=rb.used_place%>" data-id="<%=rb.id%>" data-bdcard_count="<%=rb.user.bdcard_count%>"> 기부하기
+                                data-used_place="<%=rb.used_place%>" data-id="<%=rb.id%>" 
+                                data-user_bdcard_count="<%=locals.bdcard_count%>" data-req_bdcard_count="<%=rb.user.bdcard_count%>"> 기부하기
                             </button>
                         </td>
+                        <%}else{%>
+                        <td></td>
+                        <%}%>
                     </tr>
                     <%}%>
                 </tbody>
             </table>
-                
+            <div id="user_bdcard_count" style="float: left; color: limegreen">보유중인 헌혈증 개수 : <%=locals.bdcard_count%></div>
+    
             <div style="float: right">            
                 <a id="blood_req" href='/blood/blood_request' class="btn btn-success">기부요청 글쓰기</a>            
             </div>
@@ -118,24 +122,23 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <h5 class="modal-title" id="exampleModalLabel"></h5><h4>님에게 기부하기</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="form-row align-items-center">
-                    <div class="col-sm-2"></div>
+                    <div class="col-sm-3"></div>
                     총
-                    <label id="donated_count" for="message-text" class="col-form-label"></label>
-                    개가 기부되었고
                     <label id="need_more" for="message-text" class="col-form-label"></label>
-                    개가 더 필요합니다.
+                    개 더 기부하실 수 있습니다.
                     <div class="col-sm-2"></div>
 
+                    <div class="col-sm-2"></div>
                     <label for="inputDonate_count" class="col-form-label col-sm-5">기부할 헌혈증 개수 입력 : </label>
                     <input  type="text" class="form-control col-sm-2" id="donate_count" name="donate_count"/> 
-                    <label class="col-form-label col-sm-2">개</label>
+                    <label class="col-form-label">개</label>
                     <div class="col-sm-2"></div>
                 </div>
             </div>
@@ -148,21 +151,21 @@
 </div>
 
 <script>
-    $('#donationModal').on('hidden.bs.modal', function (e) {
-        $(this).find('donate_count')[0].reset()
-    });
-    var need_more;
-    var req_user_id;
-    var need_count;
-    var nickname;
-    var donate_count;
-    var used_place;
-    var id;
-    var bdcard_count;
+   
+    var need_more; // 남은 기부 개수 (최대 기부할 수 있는 헌혈증 개수)
+    var req_user_id; //요청글 올린 사용자의 아이디
+    var need_count; // 요청글의 필요한 헌혈증 개수
+    var nickname; // 요청글 올린 사용자의 닉네임
+    var donate_count; // 기부자가 입력한 헌혈증 개수
+    var donated_count; // 요청글의 기부된 헌혈증 개수
+    var used_place; // 사용될 병원
+    var id; // 요청글 id(int)
+    var user_bdcard_count; // 현재 로그인한 사용자의 헌혈증 개수
+    var req_bdcard_count; // 기부요청글을 올린 사용자의 헌혈증 개수
+
     //모달 창에 나타나는 정보 표시
     $('#donationModal').on('show.bs.modal', function (event) {
         var modal = $(this)
-
         var button = $(event.relatedTarget)
         id = button.data('id');
         req_user_id = button.data('req_user_id')
@@ -170,37 +173,29 @@
         nickname = button.data('nickname')
         donated_count = button.data('donated_count')
         used_place = button.data('used_place')
-        bdcard_count = button.data('bdcard_count');
+        user_bdcard_count = button.data('user_bdcard_count');
+        req_bdcard_count = button.data('req_bdcard_count');
 
         need_more = need_count - donated_count;
 
-        modal.find('.modal-title').text(nickname + '님에게 기부하기');
-        modal.find('#donated_count').text(donated_count).css('color', 'red');
+        modal.find('.modal-title').text(nickname).css('color', 'green');
         modal.find('#need_more').text(need_more).css('color', 'red');
-
     })
-
-    $('.donation').click(function () {
-        if ("<%=locals.user_id%>" == $(this).attr('data-req_user_id')) {
-            $('#donationModal').modal('dispose')
-            alert('asdf')
-        }
-    })
-    
 
     //기부요청
     $('#donation').click(function () {
-        var bdcard = "<%=locals.bdcard_count%>";
+        alert(user_bdcard_count);
+
         var donate_count = Number($("#donate_count").val());
         if (donate_count == 0) {
             alert('0개를 기부하실 수 없습니다. 다시 입력해주세요.');
             return;
         }
-        if (bdcard == 0) {
+        if (user_bdcard_count == 0) {
             alert('등록한 헌혈증이 0개입니다. 새로운 헌혈증을 등록해주세요.');
             return;
         }
-        if (bdcard < donate_count) {
+        if (user_bdcard_count < donate_count) {
             alert('등록한 헌혈증이 ' + donate_count + ' 개 미만입니다. 개수를 다시 입력해주세요.');
             return;
         }
@@ -210,47 +205,48 @@
         }
 
 
-
         // ajax로 기부 처리
-        if (donate_count <= need_more) {
-            $.ajax({
-                url: '/blood/blood_donation',
-                dataType: 'json',
-                type: 'POST',
-                data: { 
-                    id: id,
-                    req_user_id: req_user_id,
-                    nickname: nickname,
-                    donate_count: Number($('#donate_count').val()),
-                    need_count: need_count,
-                    donated_count: donated_count,
-                    used_place: used_place,
-                    bdcard_count: bdcard_count
-                },
-                success: function (data) {
-                    alert(donate_count + '개의 헌혈증이 기부되었습니다. 감사합니다!');
-                    
-                    $('#donationModal').find('#donated_count').text(data.donated_count).css('color', 'red');
-                        $('#donationModal').find('#need_more').text(data.need_more).css('color', 'red');
-                    $('#bcount' + id).text(data.donated_count + '/' + need_count);
-                    
-                    $('#' + id).attr('data-need_count', data.need_count);
-                    $('#' + id).attr('data-donated_count', data.donated_count);
-                    $('#' + id).attr('data-bdcard_count', data.bdcard_count);
+        $.ajax({
+            url: '/blood/blood_donation',
+            dataType: 'json',
+            type: 'POST',
+            data: { 
+                id: id,
+                req_user_id: req_user_id,
+                nickname: nickname,
+                donate_count: donate_count,
+                need_count: need_count,
+                donated_count: donated_count,
+                used_place: used_place,
+                user_bdcard_count: user_bdcard_count,
+                req_bdcard_count: req_bdcard_count
+            },
+            success: function (data) {
+                alert(donate_count + '개의 헌혈증이 기부되었습니다. 감사합니다!');
+                
+                need_more = data.need_more;
+                donated_count = data.donated_count;
+                user_bdcard_count = data.user_bdcard_count;
 
-                    if (data.is_finished) {
-                        alert('해당 기부요청글의 기부가 완료되었습니다!');
-                       
-                    }
+                $('#need_more').text(need_more);
+                $('#bcount' + id).text(donated_count + '/' + need_count);
+                $('#' + id).attr('data-need_count', need_count);
+                $('#' + id).attr('data-donated_count', donated_count);
+                $('#user_bdcard_count').text('보유중인 헌혈증 개수 : ' + data.user_bdcard_count)
+
+                if (data.is_finished) {
+                    alert('해당 기부요청글의 기부가 완료되었습니다!');
                     $('#donationClose').trigger("click");
                     $('#donationClose').bind("click");
-                },
-                error: function (err) {
-                    console.log(err);
                 }
-            });
-        }
+                location.href = '/blood/blood_donation_main'
+
+            },
+            error: function (err) {
+                console.log(err);
+            }
         });
+    });
 </script>
 </body>
 </html>

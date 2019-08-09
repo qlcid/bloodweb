@@ -70,6 +70,7 @@ router.get('/blood_donation_main', function (req, res, next) {
   // { attributes: {include: [[sequelize.fn('COUNT', sequelize.col('id')), 'count']]}}
 
   Reqboard.findAll({
+    order: [['reg_date', 'DESC']],
     include: [
       {model: User, required: true},
     ]
@@ -110,6 +111,7 @@ router.post('/blood_request_do', function (req, res, next) {
     console.log('success');
 
     Reqboard.findAll({
+      order: [['reg_date', 'DESC']],
       include: [
         {model: User, required: true},
       ]
@@ -132,24 +134,47 @@ router.post('/blood_request_do', function (req, res, next) {
 
 //헌혈증 기부 처리
 router.post('/blood_donation', function (req, res, next) {
-  var donate_count = req.body.donate_count;
-  var donated_count = req.body.donated_count;
-  var need_count = req.body.need_count;
+  var donate_count = Number(req.body.donate_count);
+  var donated_count = Number(req.body.donated_count);
+  var need_count = Number(req.body.need_count);
   var req_user_id = req.body.req_user_id;
-  var nickname = req.body.nickname;
   var used_place = req.body.used_place;
   var id = req.body.id;
-  var bdcard_count = req.body.bdcard_count;
+  var req_bdcard_count = Number(req.body.req_bdcard_count);
+  var user_bdcard_count = Number(req.body.user_bdcard_count);
 
   var donater = req.user.user_id;
   
+  // 기부자 헌혈증 개수 감소, 기부 개수 증가 
+  req.user.bdcard_count -= donate_count;
+  user_bdcard_count -= donate_count;
+  req.user.dona_count += donate_count;
+
+  User.update({
+    bdcard_count: user_bdcard_count,
+    dona_count: req.user.dona_count
+  },{
+      where: { user_id: donater }
+  }).catch(function (err) {
+    console.log(err);
+  })
+
+  // 기부 요청자 헌혈증 개수 증가
+  User.update({
+    bdcard_count: req_bdcard_count + donate_count
+  },{
+      where: { user_id: req_user_id }
+  }).catch(function (err) {
+    console.log(err);
+  })
 
   // 가장 오래된 헌혈증 순으로 기부 개수만큼 가져와서 소유자, 기부날짜, 사용될 병원, 기부자 등 값들 update (기부 수행)
   Bdcard.findAll({
-    order: [['reg_date', 'DESC']],
-    limit: Number(donate_count),
+    order: [['reg_date', 'ASC']],
+    limit: donate_count,
     where: {
-      is_donated: false
+      is_donated: false,
+      owner_id: donater
     }
   }).then(function (bdcards) {
     
@@ -163,25 +188,6 @@ router.post('/blood_donation', function (req, res, next) {
         owner_id: req_user_id,
       }, {
           where: { serial_number: element.serial_number},
-      }).then(function () {
-        // 기부자 헌혈증 -1
-        req.user.bdcard_count -= Number(donate_count);
-        User.update({
-          bdcard_count: req.user.bdcard_count
-        },{
-            where: { user_id: donater }
-        }).catch(function (err) {
-          console.log(err);
-        })
-
-        // 기부 요청자 +1
-        User.update({
-          bdcard_count: Number(bdcard_count) + Number(donate_count)
-        },{
-            where: { user_id: req_user_id }
-        }).catch(function (err) {
-          console.log(err);
-        })
       }).catch(function (err) {
         console.log(err);
       })
@@ -191,21 +197,21 @@ router.post('/blood_donation', function (req, res, next) {
   });
 
   // 기부요청의 기부 개수 상태 업데이트
-  var donated_count_num = Number(donated_count) + Number(donate_count);
-  var need_more = Number(need_count) - Number(donate_count);
-  if(need_count==donated_count_num)
+  var donated_count_update = donate_count + donated_count;
+  var need_more = need_count - donated_count_update;
+  if(need_count == donated_count_update)
     var is_finished = true;
   else
     var is_finished = false;
   Reqboard.update({
-    donated_count: donated_count_num,
+    donated_count: donated_count_update,
     is_finished: is_finished,
-    
   },{
     where: {id: id},
   }).then(function(re){
     res.send(Object.assign(req.user, {
-      donated_count: donated_count_num, 
+      user_bdcard_count: user_bdcard_count,
+      donated_count: donated_count_update, 
       need_more: need_more, 
       is_finished: is_finished
     }));

@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('bdcard', {
         serial_number: {
-            type: DataTypes.STRING(15),
+            type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true
         },

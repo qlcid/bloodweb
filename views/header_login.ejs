@@ -23,7 +23,7 @@
             <li class="nav-item">
 
                 닉네임 : <%=locals.nickname%><br>
-                등급 : <label style="color: brown"id="class"><%=locals.class%></label>
+                등급 : <label id="class"><%=locals.class%></label>
 
             </li>
             <li class="nav-item">
@@ -39,16 +39,17 @@
     </div>
 </nav>
 
-
 <script>
     $(function(){
-        if("<%=locals.class%>" == 'bronze')
-            $("#class").css("color: brown");
+        if("<%=locals.class%>" == '브론즈')
+            $("#class").css("color", "brown");
         else if("<%=locals.class%>" == 'silver')
-            $("#class").css("color: ");
+            $("#class").css("color", "silver");
         else if("<%=locals.class%>" == 'gold')
-            $("#class").css("color: brown");
+            $("#class").css("color", "gold");
         else if("<%=locals.class%>" == 'platinum')
-            $("#class").css("color: brown");
+            $("#class").css("color", "");
+        else
+            $("#class").css("color", "");
     })
 </script>
