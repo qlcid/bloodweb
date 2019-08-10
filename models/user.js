@@ -26,12 +26,17 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(20),
             allowNull: false,
         },
+        bdcard_count: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+        },
         dona_count: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
         },
-        bdcard_count: {
+        donated_bdcard_count: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,

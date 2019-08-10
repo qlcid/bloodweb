@@ -163,7 +163,7 @@ router.post('/blood_donation', function (req, res, next) {
   var req_user_id = req.body.req_user_id;
   var used_place = req.body.used_place;
   var id = req.body.id;
-  var req_bdcard_count = Number(req.body.req_bdcard_count);
+  var req_donated_bdcard_count = Number(req.body.req_donated_bdcard_count);
   var user_bdcard_count = Number(req.body.user_bdcard_count);
 
   var donater = req.user.user_id;
@@ -184,7 +184,7 @@ router.post('/blood_donation', function (req, res, next) {
 
   // 기부 요청자 헌혈증 개수 증가
   User.update({
-    bdcard_count: req_bdcard_count + donate_count
+    donated_bdcard_count: req_donated_bdcard_count + donate_count
   },{
       where: { user_id: req_user_id }
   }).catch(function (err) {

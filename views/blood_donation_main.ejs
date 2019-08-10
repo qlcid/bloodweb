@@ -97,7 +97,7 @@
                                 data-req_user_id="<%=rb.req_user_id%>" data-nickname="<%=rb.user.nickname%>"
                                 data-need_count="<%=rb.need_count%>" data-donated_count="<%=rb.donated_count%>"
                                 data-used_place="<%=rb.used_place%>" data-id="<%=rb.id%>" 
-                                data-user_bdcard_count="<%=locals.bdcard_count%>" data-req_bdcard_count="<%=rb.user.bdcard_count%>"> 기부하기
+                                data-user_bdcard_count="<%=locals.bdcard_count%>" data-req_donated_bdcard_count="<%=rb.user.donated_bdcard_count%>"> 기부하기
                             </button>
                         </td>
                         <%}else{%>
@@ -161,7 +161,7 @@
     var used_place; // 사용될 병원
     var id; // 요청글 id(int)
     var user_bdcard_count; // 현재 로그인한 사용자의 헌혈증 개수
-    var req_bdcard_count; // 기부요청글을 올린 사용자의 헌혈증 개수
+    var req_donated_bdcard_count; // 기부요청글을 올린 사용자가 기부받은 헌혈증 개수
 
     //모달 창에 나타나는 정보 표시
     $('#donationModal').on('show.bs.modal', function (event) {
@@ -174,7 +174,7 @@
         donated_count = button.data('donated_count')
         used_place = button.data('used_place')
         user_bdcard_count = button.data('user_bdcard_count');
-        req_bdcard_count = button.data('req_bdcard_count');
+        req_donated_bdcard_count = button.data('req_donated_bdcard_count');
 
         need_more = need_count - donated_count;
 
@@ -218,7 +218,7 @@
                 donated_count: donated_count,
                 used_place: used_place,
                 user_bdcard_count: user_bdcard_count,
-                req_bdcard_count: req_bdcard_count
+                req_donated_bdcard_count: req_donated_bdcard_count
             },
             success: function (data) {
                 alert(donate_count + '개의 헌혈증이 기부되었습니다. 감사합니다!');
@@ -237,6 +237,7 @@
                     alert('해당 기부요청글의 기부가 완료되었습니다!');
                     $('#donationClose').trigger("click");
                     $('#donationClose').bind("click");
+                    $( 'button #' + id ).contents().unwrap().wrap( '<label>기부완료</label>' );
                 }
                 location.href = '/blood/blood_donation_main'
 
