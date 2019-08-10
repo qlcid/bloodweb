@@ -1,7 +1,7 @@
 {
   "development": {
-    "username": "wocjf8888",
-    "password": "1234",
+    "username": "root",
+    "password": "0000",
     "database": "bloodchain",
     "host": "127.0.0.1",
     "dialect": "mysql",
