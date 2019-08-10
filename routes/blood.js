@@ -64,7 +64,6 @@ router.post('/blood_register_do', function (req, res, next) {
 
 // 마이페이지 - 내 기부요청 관리 라우터
 router.get('/my_blood_request', function (req, res, next) {
-  // { attributes: {include: [[sequelize.fn('COUNT', sequelize.col('id')), 'count']]}}
   Reqboard.findAll({
     include: [
       {model: User, required: true},
@@ -77,7 +76,6 @@ router.get('/my_blood_request', function (req, res, next) {
     Object.assign(result, { register: false });
     if (reqboards) {
       Object.assign(result, { reqboards: reqboards });
-      typeof(reqboards.user)
     }
      res.render('my_blood_request', result);
   }).catch(function (err) {
@@ -88,10 +86,6 @@ router.get('/my_blood_request', function (req, res, next) {
 
 // 헌혈증 기부, 기부요청목록, 기부요청 메인화면    main화면에서 기부하러/받으러 가기 >> 버튼 
 router.get('/blood_donation_main', function (req, res, next) {
-
-
-  // { attributes: {include: [[sequelize.fn('COUNT', sequelize.col('id')), 'count']]}}
-
   Reqboard.findAll({
     order: [['reg_date', 'DESC']],
     include: [
@@ -105,7 +99,6 @@ router.get('/blood_donation_main', function (req, res, next) {
     Object.assign(result, { register: false });
     if (reqboards) {
       Object.assign(result, { reqboards: reqboards });
-      typeof(reqboards.user)
     }
      res.render('blood_donation_main', result);
   }).catch(function (err) {
