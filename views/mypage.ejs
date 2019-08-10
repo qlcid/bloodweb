@@ -123,21 +123,23 @@
                     <table class="table table-bordered">
                         <tbody>
                             <tr>
-                                <th class="text-center" scope="row">E-mail(아이디)</th>
+                                <th class="text-center" scope="row">아이디</th>
                                 <td class="text-center"><%=locals.user_id%></td>
                             </tr>
                             <tr>
-                                <th class="text-center">이름</th>
-                                <td class="text-center"><%=locals.name%></td>
+                                <th class="text-center" scope="row">닉네임</th>
+                                <td class="text-center"><%=locals.nickname%></td>
                             </tr>
+                            <tr>
+                                <th class="text-center"><%if(locals.flag){%>재단<%}%>이름</th>
+                                <td class="text-center"><%=locals.user_name%></td>
+                            </tr>
+                            <%if(locals.flag){%>
                             <tr>
                                 <th class="text-center">사업자등록번호</th>
                                 <td class="text-center"><%=locals.business_license_num%></td>
                             </tr>
-                            <tr>
-                                <th class="text-center">재단이름</th>
-                                <td class="text-center"></td>
-                            </tr>
+                            <%}%>
                         </tbody>
                     </table>
                 </div>
