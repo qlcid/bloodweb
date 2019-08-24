@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
         class: {
             type: DataTypes.STRING(10),
             allowNull: false,
-            defaultValue: '브론즈',
+            defaultValue: 'bronze',
         },
         reg_date: {
             type: DataTypes.DATE,
